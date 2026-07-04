@@ -128,6 +128,9 @@ uv run python -m mlstudio.app_case
 # run my Phase 4 modified copy (adds RMSE to the evaluation metrics)
 uv run python -m mlstudio.app_venkat_teja
 
+# run my Phase 5 custom project (diabetes classification)
+uv run python -m mlstudio.app_diabetes_venkat_teja
+
 # run common chores: format, lint, run checks and tests...
 uv run ruff format .
 uv run ruff check . --fix
@@ -182,27 +185,29 @@ Press `Ctrl+c` (both keys together) or `Ctrl+Z` then `Enter` on Windows.
 
 ## Findings and Visuals
 
-Take screenshots of your charts and provide them here with a discussion.
-In Markdown, display a figure by using:
-an exclamation mark immediately followed by square brackets containing a useful caption
-immediately followed by parentheses containing the relative path to your figure.
-Note: When you start typing the path with a dot (.) for "here, in this directory",
-the IDE may help complete the path.
+My custom project (`src/mlstudio/app_diabetes_venkat_teja.py`) classifies
+diabetes status from the CDC Diabetes Health Indicators dataset
+(70,692 survey respondents, balanced 50/50 between classes).
 
-In your custom project, follow this example, but
+```shell
+uv run python -m mlstudio.app_diabetes_venkat_teja
+```
 
-- your figures and narrative should reflect your work,
-- this `README.md` should include your commands, process, and visuals, and
-- `docs/index.md` should include your narrative.
+A logistic regression model using 10 health, lifestyle, and demographic
+features reached **74.5% accuracy** on a ~14,000-row held-out test set -
+well above the 50% coin-flip baseline for this balanced dataset.
+Charts are saved to `artifacts/` on every run.
 
-Remove unnecessary instructional comments in your custom files.
+The diabetes group shows a visibly higher BMI distribution:
 
-These are from the example app used to test the .venv/.
-If possible, replace these to present interesting results from your custom project:
+![Boxplot of BMI by diabetes status showing higher median BMI for the diabetes group](./docs/images/diabetes_bmi_by_status_venkat_teja.png)
 
-![Provide a Useful Caption](./docs/images/Figure_1.png)
+High blood pressure, poor general health, and high cholesterol are the
+strongest risk indicators; physical activity is the only protective feature:
 
-![Provide a Useful Caption](./docs/images/Figure_2.png)
+![Bar chart of logistic regression coefficients ranked by log-odds of diabetes](./docs/images/diabetes_coefficients_venkat_teja.png)
+
+Full narrative in [docs/index.md](docs/index.md).
 
 ## Project Documentation
 

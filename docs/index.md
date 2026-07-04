@@ -64,42 +64,89 @@ lines. The useful part was reading the example closely enough to
 know exactly where evaluation happens (`train_model`) and keeping
 the change small enough to explain every line.
 
-## Phase 5. Custom Project (OPTIONAL in Module 1)
+## Phase 5. Custom Project
 
-Describe your custom project.
+My custom project predicts diabetes status from health survey
+answers, implemented in `src/mlstudio/app_diabetes_venkat_teja.py`
+and run with:
 
-In Module 1, this includes choosing a dataset, identifying a target,
-and explaining what kind of ML problem it represents.
+```shell
+uv run python -m mlstudio.app_diabetes_venkat_teja
+```
 
 ### Basis and Data
 
-Describe the dataset, input, or example you started with.
+The example project (`app_case.py`) predicted a student's exam
+score from study habits using a tiny 10-row synthetic dataset.
+I kept that example working and applied its workflow to the
+**CDC Diabetes Health Indicators** dataset (`data/raw/diabetes.csv`),
+the recommended custom dataset already included in this repo.
 
-Include:
-
-- The original example dataset or input
-- The data source
-- Why you chose it, kept it, or changed it
-- Any important limitations or assumptions
+- **Source:** Derived from the CDC Behavioral Risk Factor
+  Surveillance System (BRFSS) 2015 survey; full citation in
+  `data/raw/README.md`.
+- **Size:** 70,692 survey respondents, 22 columns, balanced
+  50/50 between the two target classes (35,346 each).
+- **Why I chose it:** It is a real public-health dataset, large
+  enough that a train/test split is meaningful (a 20% test set
+  still holds back about 14,000 records), and it poses a
+  different problem type than the example.
+- **Limitations and assumptions:** Answers are self-reported
+  survey responses; many columns are binned (Age is a 13-level
+  group code, not years). The 50/50 balance was created by
+  sampling, so real-world prevalence is much lower - accuracy
+  here does not transfer directly to the general population.
+  About 1,635 duplicate rows exist, which is plausible when
+  every column is a rounded or yes/no answer, so they were kept.
 
 ### Modeling Approach
 
-Describe the problem type and approach for this project.
+This is **supervised learning**: I picked a target column to
+predict, `Diabetes_binary` (0 = no diabetes, 1 = diabetes or
+prediabetes), and trained on labeled examples.
 
-Include:
-
-- Is this supervised or unsupervised and how do you know
+The target is a **discrete category**, not a continuous number,
+so this is a **classification** problem - unlike the example,
+which predicted a continuous score (regression). I used
+`LogisticRegression` with 10 interpretable features (blood
+pressure, cholesterol, BMI, smoking, stroke, heart disease,
+physical activity, general health, difficulty walking, age
+group) and evaluated with accuracy and a confusion matrix
+instead of MAE and R-squared.
 
 ### Summary
 
-Summarize your custom project.
+I copied the example's nine-section workflow (load, inspect,
+check quality, clean, train, predict one case, chart, summarize)
+and swapped in the new dataset, target, model, and metrics.
+Charts are saved to `artifacts/` so results are reviewable
+without re-running.
 
-Include:
+**Results** on the 20% held-out test set (about 14,139 rows):
 
-- How you implemented your custom work
-- What results you got
-- What you learned
-- How well you exercised the skills covered in this project
-- What kinds of real problems you could apply these skills to in the future
+- **Accuracy: 0.745** - meaningfully better than the 0.50 a
+  coin flip would score on this balanced dataset.
+- Confusion matrix: 5,132 true negatives, 5,396 true positives,
+  1,958 false positives, 1,653 false negatives.
+- A hypothetical respondent with high blood pressure, high
+  cholesterol, BMI 33, fair general health, and age 60-64 was
+  predicted diabetic with probability 0.82.
 
-Display at least one image or screenshot showing your work.
+The BMI distribution shifts visibly upward for the diabetes
+group:
+
+![Boxplot of BMI by diabetes status showing higher median BMI for the diabetes group](./images/diabetes_bmi_by_status_venkat_teja.png)
+
+The model coefficients rank high blood pressure, poor general
+health, and high cholesterol as the strongest risk indicators,
+with physical activity the only protective (negative) feature:
+
+![Bar chart of logistic regression coefficients ranked by log-odds of diabetes](./images/diabetes_coefficients_venkat_teja.png)
+
+**What I learned:** how to characterize a problem before
+modeling (binary category target means classification), why the
+baseline matters when judging accuracy, and how coefficient
+signs turn a model into an explanation. The same workflow -
+frame the target, split the data, fit, evaluate against a
+baseline, interpret - applies to real problems like predicting
+customer churn, loan default, or hospital readmission.
