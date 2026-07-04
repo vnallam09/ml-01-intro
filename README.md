@@ -125,6 +125,9 @@ uvx pre-commit run --all-files
 # run the example module to verify the environment (.venv/)
 uv run python -m mlstudio.app_case
 
+# run my Phase 4 modified copy (adds RMSE to the evaluation metrics)
+uv run python -m mlstudio.app_venkat_teja
+
 # run common chores: format, lint, run checks and tests...
 uv run ruff format .
 uv run ruff check . --fix

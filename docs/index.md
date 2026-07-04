@@ -23,19 +23,46 @@ to get the example projects running on your machine.
 
 ## Phase 4. Technical Modification
 
-Describe your small technical modification to the example project.
+**What I changed.** I copied the working example
+(`src/mlstudio/app_case.py`) to my own file
+(`src/mlstudio/app_venkat_teja.py`) and made one small change:
+the model evaluation now also reports the
+**Root Mean Squared Error (RMSE)** alongside MAE and R-squared,
+using `sklearn.metrics.root_mean_squared_error`.
 
-Include:
+**Why I chose it.** RMSE is in the same units as the target
+(score points), but unlike MAE it squares each error before
+averaging, so it penalizes large misses more heavily.
+Comparing RMSE to MAE tells you something MAE alone cannot:
+if RMSE is much larger than MAE, a few predictions are far off;
+if they are close, the errors are fairly uniform.
 
-- What you changed
-- Why you chose that change
-- How you verified that it worked
-- What result, output, chart, metric, or behavior confirmed the change
+**How I verified it.** I ran my copy from the project root:
 
-Compared with the example project,
-explain what is different and why the change matters.
+```shell
+uv run python -m mlstudio.app_venkat_teja
+```
 
-Was it easy, or surprisingly challenging and why do you think so?
+The example (`app_case`) still runs unchanged, so the project
+keeps working with both versions side by side.
+
+**What confirmed the change.** The log output now shows the new
+metric between the two original ones:
+
+```text
+| INFO | ML | Mean absolute error: 0.48
+| INFO | ML | Root mean squared error: 0.53
+| INFO | ML | R-squared: 1.00
+```
+
+RMSE (0.53) is close to MAE (0.48), which means the model's
+errors on the test set are small and uniform - no single
+prediction misses by a lot.
+
+**Difficulty.** The change itself was easy - one import and two
+lines. The useful part was reading the example closely enough to
+know exactly where evaluation happens (`train_model`) and keeping
+the change small enough to explain every line.
 
 ## Phase 5. Custom Project (OPTIONAL in Module 1)
 
